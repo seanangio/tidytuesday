@@ -1,4 +1,5 @@
 library(tidyverse)
+library(ggrepel)
 library(readxl)
 
 # download file
@@ -27,21 +28,25 @@ region_ranks <- tuition %>%
 
 tuition$region <- factor(tuition$region, levels = region_ranks)
 
+tidy_tuition <- tuition %>%
+    gather(key = "year", value = "tuition", -State, -abb, -region)
+
+last_year <- tidy_tuition %>%
+    filter(year == "2015-16")
+
 # mean tuition over time faceted by region
-tuition %>%
-    gather(key = "year", value = "tuition", -State, -abb, -region) %>%
-    group_by(region, year) %>%
-    summarize(tuition = mean(tuition)) %>%
-    ggplot(aes(x = year, y = tuition, group = region)) +
-        geom_line() +
-        geom_point() +
-        facet_grid(. ~ region) +
-    scale_y_continuous(labels = scales::dollar) +
-    theme(axis.text.x = element_blank(),
+ggplot(tidy_tuition, 
+       aes(x = year, y = tuition, group = abb, label = abb, color = abb)) +
+        geom_line(alpha = 0.5) +
+        facet_grid(~ region) +
+        geom_text_repel(data = last_year, size = 3) +
+        scale_y_continuous(labels = scales::dollar) +
+        guides(color = FALSE) +
+        theme(axis.text.x = element_blank(),
           axis.ticks.x = element_blank(),
           strip.text.x = element_text(size = 7)) +
-    labs(title = "Mean Tuition Over Time Faceted by Region", 
-         x = "2004-05 to 2015-16", y = "",
-         caption = "Source: https://onlinembapage.com/average-tuition-and-educational-attainment-in-the-united-states/")
+        labs(title = "Mean Tuition Over Time Faceted by Region", 
+             x = "2004-05 to 2015-16", y = "",
+             caption = "Source: https://onlinembapage.com/average-tuition-and-educational-attainment-in-the-united-states/")
 
 ggsave("week1.png")    
