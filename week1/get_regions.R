@@ -1,13 +1,14 @@
 library(readr)
+library(here)
 
 # download and unzip file
-if (!file.exists("us_states.zip")) {
+if (!file.exists("week1/us_states.zip")) {
     url <- "http://www.whypad.com/wp-content/uploads/us_states.zip"
-    download.file(url, dest = "us_states.zip", mode = "wb") 
-    unzip("us_states.zip", exdir = "./")
+    download.file(url, dest = "week1/us_states.zip", mode = "wb") 
+    unzip("week1/us_states.zip", exdir = "./")
 }
 
-states <- read_csv("us_states.csv", col_names = FALSE)
+states <- read_csv(here("week1/us_states.csv"), col_names = FALSE)
 states <- states[,-1]
 names(states) <- c("state", "abb")
 
@@ -23,19 +24,21 @@ mountain <- c("AZ","CO","ID","MT","NV","NM","UT","WY")
 pacific <- c("AK","CA","HW","OR","WA")
 
 # assign regions to abbreviations
-states$region <- vector("character", length = nrow(states))
-states$region <- ifelse(
-    states$abb %in% new_england, "New England",
-      ifelse(states$abb %in% mid_atlantic, "Mid-Atlantic",
-        ifelse(states$abb %in% en_central, "East North Central",
-          ifelse(states$abb %in% wn_central, "West North Central",
-            ifelse(states$abb %in% south_atlantic, "South Atlantic",
-              ifelse(states$abb %in% south_atlantic, "South Atlantic",
-                ifelse(states$abb %in% es_central, "East South Central",
-                  ifelse(states$abb %in% ws_central, "West South Central",
-                    ifelse(states$abb %in% mountain, "Mountain",
-                      "Pacific")))))))))
+states <- states %>%
+    mutate(
+        region = case_when(
+            states$abb %in% new_england ~ "New England",
+            states$abb %in% mid_atlantic ~ "Mid-Atlantic",
+            states$abb %in% en_central ~ "East North Central",
+            states$abb %in% wn_central ~ "West North Central",
+            states$abb %in% south_atlantic ~ "South Atlantic",
+            states$abb %in% es_central ~ "East South Central",
+            states$abb %in% ws_central ~ "West South Central",
+            states$abb %in% mountain ~ "Mountain",
+            TRUE ~ "Pacific"
+        )
+    )
 
 # output a csv
-write_csv(states, path = "us_states_regions.csv")
+write_csv(states, path = "week1/us_states_regions.csv")
 rm(list = ls())

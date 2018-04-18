@@ -1,16 +1,17 @@
 library(tidyverse)
 library(ggrepel)
 library(readxl)
+library(here)
 
 # download file
-if (!file.exists("us_avg_tuition.xlsx")) {
+if (!file.exists("week1/us_avg_tuition.xlsx")) {
     url <- "https://github.com/rfordatascience/tidytuesday/blob/master/data/us_avg_tuition.xlsx"
-    download.file(url, dest = "us_avg_tuition.xlsx", mode = "wb") 
+    download.file(url, dest = "week1/us_avg_tuition.xlsx", mode = "wb") 
 }
-tuition <- read_xlsx("us_avg_tuition.xlsx")
+tuition <- read_xlsx(here("week1/us_avg_tuition.xlsx"))
 
 # run get_regions.R first
-states <- read_csv("us_states_regions.csv")
+states <- read_csv("week1/us_states_regions.csv")
 
 # add abb and region variables
 tuition <- tuition %>%
