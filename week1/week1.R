@@ -50,4 +50,4 @@ ggplot(tidy_tuition,
              x = "2004-05 to 2015-16", y = "",
              caption = "Source: https://onlinembapage.com/average-tuition-and-educational-attainment-in-the-united-states/")
 
-ggsave("week1.png")    
+ggsave("week1/week1.png")    
